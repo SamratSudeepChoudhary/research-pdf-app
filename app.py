@@ -8,20 +8,31 @@ from langchain.llms import OpenAI
 import openai
 from collections import deque
 
+@st.cache_data
+def unzip_files(temp_var):
+    shutil.unpack_archive("_pdfs.zip")
+    shutil.unpack_archive("_txts.zip")
+    shutil.unpack_archive("_txts2.zip")
+    shutil.unpack_archive("_txts3.zip")
+    shutil.unpack_archive("_dbs3.zip")
+    return True
+
 @st.cache_resource
 def create_qa(db_name):
-    db = FAISS.load_local('/content/_dbs3/' + db_name, OpenAIEmbeddings())
+    db = FAISS.load_local('/_dbs3/' + db_name, OpenAIEmbeddings())
     qa = RetrievalQA.from_chain_type(llm=OpenAI(temperature=1), chain_type="stuff", retriever=db.as_retriever())
     return qa
 
 st.title("Chat with Research reports📈")
 
+unzip_files(True)
+
 db_name = st.sidebar.selectbox(
     "Choose a Research report:",
-    os.listdir('/content/_dbs3')
+    os.listdir('/_dbs3')
 )
 
-with open("/content/_pdfs/" + db_name + ".pdf", "rb") as pdf_file:
+with open("/_pdfs/" + db_name + ".pdf", "rb") as pdf_file:
     PDFbyte = pdf_file.read()
 
 st.sidebar.download_button(label="Download PDF",
@@ -29,13 +40,13 @@ st.sidebar.download_button(label="Download PDF",
                             file_name=db_name + ".pdf",
                             mime='application/octet-stream')
 
-caption_message = open('/content/_txts/' + db_name + '_simplified.txt').read()
+caption_message = open('/_txts/' + db_name + '_simplified.txt').read()
 st.sidebar.caption(caption_message)
 
-caption_message2 = open('/content/_txts2/' + db_name + '_parameters.txt').read()
+caption_message2 = open('/_txts2/' + db_name + '_parameters.txt').read()
 st.sidebar.caption(caption_message2)
 
-info_message = open('/content/_txts3/' + db_name + '_reasons.txt').read()
+info_message = open('/_txts3/' + db_name + '_reasons.txt').read()
 st.sidebar.info(info_message)
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]

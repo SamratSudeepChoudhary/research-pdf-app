@@ -1,6 +1,7 @@
 import time
 import streamlit as st
 import os
+import shutil
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chains import RetrievalQA

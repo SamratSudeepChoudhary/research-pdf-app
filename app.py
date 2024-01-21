@@ -20,7 +20,7 @@ def unzip_files(temp_var):
 
 @st.cache_resource
 def create_qa(db_name):
-    db = FAISS.load_local('./_dbs3/' + db_name, OpenAIEmbeddings())
+    db = FAISS.load_local('./_dbs3/' + db_name, OpenAIEmbeddings(model='gpt-3.5-turbo-instruct'))
     qa = RetrievalQA.from_chain_type(llm=OpenAI(temperature=1), chain_type="stuff", retriever=db.as_retriever())
     return qa
 
